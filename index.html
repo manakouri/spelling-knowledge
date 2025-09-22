@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spelling Skills Challenge</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            touch-action: manipulation; /* Prevents double-tap zoom on mobile */
+        }
+        .card {
+            background-color: white;
+            border-radius: 1.5rem;
+            padding: 2.5rem;
+            box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+        }
+        .btn {
+            transition: all 0.2s ease-in-out;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+        .pattern-highlight {
+            color: #4f46e5;
+            font-weight: 700;
+        }
+
+        /* Word Find Styles */
+        #word-find-grid {
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            gap: 4px;
+            user-select: none;
+            -webkit-user-select: none; /* For Safari */
+            -moz-user-select: none;    /* For Firefox */
+            -ms-user-select: none;     /* For IE */
+        }
+        .grid-cell {
+            aspect-ratio: 1 / 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            font-weight: 500;
+            border: 1px solid #d1d5db;
+            border-radius: 0.25rem;
+            cursor: pointer;
+            transition: background-color 0.1s;
+        }
+        .grid-cell.selecting {
+            background-color: #a5b4fc; /* indigo-300 */
+            color: white;
+        }
+        .grid-cell.found {
+            background-color: #4ade80; /* green-400 */
+            color: white;
+        }
+        #found-words-list li.found {
+            text-decoration: line-through;
+            color: #6b7280; /* gray-500 */
+        }
+    </style>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen p-4">
+
+    <div id="game-container" class="card w-full max-w-4xl text-center">
+
+        <!-- Main Menu Screen -->
+        <div id="main-menu-screen">
+            <h1 class="text-4xl font-bold text-gray-800 mb-8">Spelling Skills Challenge</h1>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <button onclick="showStageMenu(3)" class="btn p-8 bg-blue-500 text-white font-bold rounded-xl text-2xl">Stage 3</button>
+                <button onclick="showStageMenu(4)" class="btn p-8 bg-green-500 text-white font-bold rounded-xl text-2xl">Stage 4</button>
+                <button onclick="showStageMenu(5)" class="btn p-8 bg-yellow-500 text-white font-bold rounded-xl text-2xl">Stage 5</button>
+                <button onclick="showStageMenu(6)" class="btn p-8 bg-red-500 text-white font-bold rounded-xl text-2xl">Stage 6</button>
+            </div>
+        </div>
+
+        <!-- Stage Menu Screen -->
+        <div id="stage-menu-screen" class="hidden">
+            <div class="flex items-center justify-between mb-8">
+                <button onclick="showMainMenu()" class="btn bg-gray-200 text-gray-700 font-bold py-2 px-4 rounded-lg">&larr; Back</button>
+                <h1 id="stage-title" class="text-4xl font-bold text-gray-800"></h1>
+                <div></div> <!-- Spacer -->
+            </div>
+            <div id="pattern-buttons-container" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                <!-- Pattern buttons will be inserted here -->
+            </div>
+        </div>
+
+        <!-- Activity Screen -->
+        <div id="activity-screen" class="hidden text-left">
+            <div class="flex items-center justify-between mb-6">
+                <button id="back-to-stage-menu" class="btn bg-gray-200 text-gray-700 font-bold py-2 px-4 rounded-lg">&larr; Back to Stage</button>
+                 <h2 id="activity-title" class="text-2xl md:text-3xl font-bold text-indigo-700 text-center"></h2>
+                 <div></div>
+            </div>
+
+            <!-- 1. Rule Introduction -->
+            <div id="activity-step-1" class="activity-step p-6 bg-indigo-50 border border-indigo-200 rounded-lg mb-6">
+                <h3 class="text-xl font-bold text-gray-800 mb-2">The Rule</h3>
+                <p id="rule-text" class="text-lg text-gray-700 mb-4"></p>
+                <h4 class="font-semibold text-gray-800 mb-2">Example Words:</h4>
+                <div id="example-words" class="flex flex-wrap gap-x-4 gap-y-2 text-lg"></div>
+                 <button onclick="nextActivityStep(2)" class="btn mt-6 w-full bg-indigo-600 text-white font-bold py-3 rounded-lg">Start Practising &rarr;</button>
+            </div>
+
+            <!-- 2. Fill the Gaps -->
+            <div id="activity-step-2" class="activity-step hidden p-6 bg-blue-50 border border-blue-200 rounded-lg mb-6">
+                <h3 class="text-xl font-bold text-gray-800 mb-4">Fill the Gaps</h3>
+                <p class="text-lg text-gray-600 mb-4">Type the full word correctly in the box.</p>
+                <div id="fill-gaps-container">
+                    <p id="gapped-word" class="text-4xl font-bold text-center my-6 tracking-widest"></p>
+                    <input type="text" id="gapped-word-input" class="w-full text-center text-2xl p-3 border-2 border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" autocomplete="off">
+                    <div id="fill-gaps-feedback" class="h-6 mt-2 text-center font-semibold"></div>
+                    <button id="submit-gap-word-btn" class="btn mt-4 w-full bg-blue-600 text-white font-bold py-3 rounded-lg">Check Answer</button>
+                </div>
+                 <div id="fill-gaps-complete" class="hidden text-center">
+                    <p class="text-2xl font-bold text-green-600 mb-4">Great work!</p>
+                    <button onclick="nextActivityStep(3)" class="btn w-full bg-indigo-600 text-white font-bold py-3 rounded-lg">Go to Word Find &rarr;</button>
+                </div>
+            </div>
+
+            <!-- 3. Word Find -->
+            <div id="activity-step-3" class="activity-step hidden p-6 bg-green-50 border border-green-200 rounded-lg mb-6">
+                 <h3 class="text-xl font-bold text-gray-800 mb-4">Word Find</h3>
+                 <p class="text-lg text-gray-600 mb-4">Click and drag to find the hidden words.</p>
+                 <div class="flex flex-col md:flex-row gap-6 items-start">
+                    <div id="word-find-grid" class="flex-1 w-full"></div>
+                    <div class="w-full md:w-1/3">
+                        <h4 class="font-semibold mb-2">Words to find:</h4>
+                        <ul id="found-words-list" class="text-lg"></ul>
+                    </div>
+                 </div>
+                 <div id="word-find-complete" class="hidden text-center mt-6">
+                    <p class="text-2xl font-bold text-green-600 mb-4">You found them all!</p>
+                    <button onclick="nextActivityStep(4)" class="btn w-full bg-indigo-600 text-white font-bold py-3 rounded-lg">Write Sentences &rarr;</button>
+                </div>
+            </div>
+
+            <!-- 4. Sentence Writing -->
+            <div id="activity-step-4" class="activity-step hidden p-6 bg-yellow-50 border border-yellow-200 rounded-lg">
+                <h3 class="text-xl font-bold text-gray-800 mb-4">Write Your Own Sentences</h3>
+                <p class="text-lg text-gray-600 mb-4">Use some of the words from this pattern to write 2-3 sentences.</p>
+                <div id="sentence-words-reminder" class="flex flex-wrap gap-x-3 gap-y-1 text-gray-500 mb-4"></div>
+                <textarea id="sentence-textarea" class="w-full h-40 p-3 border-2 border-gray-300 rounded-lg text-lg focus:ring-indigo-500 focus:border-indigo-500" placeholder="Write your sentences here..."></textarea>
+                 <button onclick="showMainMenu()" class="btn mt-6 w-full bg-indigo-600 text-white font-bold py-3 rounded-lg">Finish & Return to Main Menu</button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        const spellingData = {
+            3: [
+                { title: "Short Vowel 'u'", pattern: "u", rule: "The short 'u' sound as in 'cup'.", words: ["cup", "mug", "run", "sun", "cut", "hug", "mud", "luck", "supper", "under", "bucket", "puppet", "butter", "muffin", "button"] },
+                { title: "The '-dge' Pattern", pattern: "dge", rule: "Used at the end of a syllable, after a short vowel to make the 'j' sound.", words: ["badge", "edge", "bridge", "fudge", "judge", "ledge", "dodge", "nudge", "wedge", "fridge"] },
+                { title: "Short Vowel 'i'", pattern: "i", rule: "The short 'i' sound as in 'sit'.", words: ["bit", "sit", "pin", "rim", "win", "lid", "hip", "tin", "dig", "inside", "insect", "simple", "sister", "finish"] },
+                { title: "The '-tch' Pattern", pattern: "tch", rule: "Used at the end of a syllable, after a short vowel to make the 'ch' sound.", words: ["catch", "match", "witch", "pitch", "hatch", "scratch", "fetch", "sketch"] },
+                { title: "The 'ou' Pattern", pattern: "ou", rule: "Makes the 'ow' sound as in 'shout'.", words: ["out", "shout", "cloud", "scout", "found", "mouth", "couch", "around", "about", "without", "surround", "amount"] },
+                { title: "Contractions (am/is/are)", pattern: "'", rule: "Join two words. Remove the first vowel from the second word and replace it with an apostrophe.", words: ["I'm", "he's", "what's", "we're", "they're"], examples: [{base: "I am", contraction: "I'm"}, {base: "he is", contraction: "he's"}, {base: "we are", contraction: "we're"}] },
+                { title: "Past Tense '-ed'", pattern: "ed", rule: "Added to verbs to show something happened in the past. Can make a 'd', 't', or 'id' sound.", words: ["looked", "jumped", "watched", "laughed", "called", "played", "cleaned", "lived", "wanted", "needed"] },
+                { title: "CVC Doubling", pattern: "doubling", rule: "Double the final consonant when adding a vowel suffix (like -ing, -er, -ed) to a short CVC (consonant-vowel-consonant) word.", words: ["shopping", "robber", "mopped", "tripping", "stepped", "fitting", "wetter"], baseWords: ["shop", "rob", "mop", "trip", "step", "fit", "wet"] }
+            ],
+            4: [
+                { title: "The 'oi' Pattern", pattern: "oi", rule: "Makes the 'oy' sound. Usually found at the beginning or in the middle of a syllable.", words: ["oil", "boil", "coin", "soil", "foil", "coil", "join", "appoint", "rejoice"] },
+                { title: "The 'oy' Pattern", pattern: "oy", rule: "Makes the 'oy' sound. Usually found at the end of a syllable.", words: ["boy", "toy", "joy", "soy", "coy", "enjoy", "destroy", "annoy", "voyage"] },
+                { title: "The 'oa' Pattern", pattern: "oa", rule: "Makes a long 'o' sound. Usually found at the beginning or in the middle of a syllable.", words: ["boat", "coat", "goat", "moan", "load", "groan", "toad", "approach"] },
+                { title: "The 'ow' (o) Pattern", pattern: "ow", rule: "Makes a long 'o' sound, like in 'snow'. Usually found at the end of a syllable.", words: ["snow", "grow", "low", "tow", "row", "show", "blow", "window", "yellow", "pillow"] },
+                { title: "The 'ow' (ou) Pattern", pattern: "ow", rule: "Makes the 'ow' sound, like in 'cow'.", words: ["cow", "now", "how", "brown", "town", "clown", "power", "flower", "towel"] },
+                { title: "The 'er'/'ur'/'ir' Pattern", pattern: "er/ur/ir", rule: "An r-controlled vowel. All three spellings can make the same 'er' sound.", words: ["her", "teacher", "fur", "turn", "nurse", "purple", "bird", "stir", "thirty", "shirt", "skirt"] },
+                { title: "The 'or' Pattern", pattern: "or", rule: "An r-controlled vowel that makes the 'or' sound.", words: ["fork", "storm", "corn", "port", "short", "sport", "born", "corner", "morning", "report"] },
+                { title: "The 'c'/'k' Rule", pattern: "c/k", rule: "'k' often comes before 'i' and 'e'. 'c' often comes before the other vowels ('a', 'o', 'u').", words: ["cat", "cup", "cold", "coat", "can", "kite", "kick", "kitten", "key", "king"] },
+                { title: "Contractions (has/will/not)", pattern: "'", rule: "Join two words. Remove some letters and replace them with an apostrophe.", words: ["he's", "he'll", "I'll", "wasn't", "can't", "won't"], examples: [{base: "he has", contraction: "he's"}, {base: "he will", contraction: "he'll"}, {base: "was not", contraction: "wasn't"}] }
+            ],
+            5: [
+                { title: "The 'ew' Pattern", pattern: "ew", rule: "Makes a long 'oo' sound, like in 'flew'.", words: ["new", "few", "blew", "crew", "stew", "chew", "grew", "review", "curfew"] },
+                { title: "The 'ue' Pattern", pattern: "ue", rule: "Makes a long 'oo' sound, like in 'blue'.", words: ["blue", "glue", "true", "queue", "due", "rescue", "continue", "argue", "avenue"] },
+                { title: "The 'y' (long i) Pattern", pattern: "y", rule: "Makes a long 'i' sound at the end of a one-syllable word.", words: ["try", "shy", "cry", "fly", "spy", "by", "dry", "my", "why"] },
+                { title: "The 'y' (long e) Pattern", pattern: "y", rule: "Makes a long 'e' sound at the end of a multi-syllable word.", words: ["happy", "funny", "sunny", "silly", "grumpy", "family", "body", "lady", "empty"] },
+                { title: "The 'ey' (long e) Pattern", pattern: "ey", rule: "Makes a long 'e' sound at the end of a word.", words: ["key", "money", "turkey", "valley", "donkey", "journey", "chimney", "monkey", "honey"] },
+                { title: "The '-le' Pattern", pattern: "le", rule: "Often found at the end of a two-syllable word after a consonant.", words: ["apple", "candle", "table", "bubble", "simple", "jungle", "giggle", "puzzle", "bottle"] },
+                { title: "The soft 'c' (s) Pattern", pattern: "c", rule: "When 'c' is followed by an 'e', 'i', or 'y', it usually makes the soft 's' sound.", words: ["cell", "cent", "ice", "race", "face", "city", "pencil", "circus", "cycle", "decide"] },
+                { title: "Contractions (have/would)", pattern: "'", rule: "Join two words, removing letters and adding an apostrophe.", words: ["we've", "I've", "should've", "we'd", "I'd", "they'd"], examples: [{base: "we have", contraction: "we've"}, {base: "I would", contraction: "I'd"}] }
+            ],
+            6: [
+                { title: "The 'ie' (long e) Pattern", pattern: "ie", rule: "Makes a long 'e' sound, as in 'chief'. Remember: 'i' before 'e' except after 'c'.", words: ["chief", "thief", "brief", "grief", "relief", "belief", "field", "shield", "piece", "niece"] },
+                { title: "The 'ei'/'eigh'/'aigh' (long a) Pattern", pattern: "ei/eigh/aigh", rule: "These patterns can all make a long 'a' sound.", words: ["eight", "weight", "freight", "neighbour", "sleigh", "straight"] },
+                { title: "The 'air'/'are' Pattern", pattern: "air/are", rule: "R-controlled vowels that make the 'air' sound.", words: ["air", "fair", "hair", "pair", "chair", "stair", "bare", "care", "fare", "share", "stare"] },
+                { title: "The '-cian' Pattern", pattern: "cian", rule: "A suffix that makes the 'shun' sound and means a person with a special skill.", words: ["musician", "magician", "technician", "electrician", "politician", "beautician"] },
+                { title: "The '-tion' Pattern", pattern: "tion", rule: "A suffix that makes the 'shun' sound.", words: ["action", "nation", "station", "lotion", "motion", "option", "education", "information"] },
+                { title: "The 'multi-' Prefix", pattern: "multi", rule: "A prefix meaning 'many' or 'much'.", words: ["multiply", "multicoloured", "multivitamin", "multimedia", "multitalented"] },
+                { title: "The 'sub-' Prefix", pattern: "sub", rule: "A prefix meaning 'under' or 'below'.", words: ["subway", "submarine", "subheading", "submerge", "substitute", "substandard"] },
+                { title: "Plural '-es'", pattern: "es", rule: "Add '-es' to make words plural that end in s, x, z, ch, or sh.", words: ["foxes", "buses", "matches", "kisses", "quizzes", "atlases"] },
+                { title: "Plural '-ves'", pattern: "ves", rule: "For most nouns ending in 'f' or 'fe', change the f/fe to 'v' and add '-es'.", words: ["leaves", "wolves", "lives", "thieves", "knives", "elves", "shelves"], baseWords: ["leaf", "wolf", "life", "thief", "knife", "elf", "shelf"] }
+            ]
+        };
+
+        let currentStage = null;
+        let currentPatternData = null;
+
+        // --- Navigation ---
+        const mainMenuScreen = document.getElementById('main-menu-screen');
+        const stageMenuScreen = document.getElementById('stage-menu-screen');
+        const activityScreen = document.getElementById('activity-screen');
+        const activitySteps = document.querySelectorAll('.activity-step');
+        
+        function showScreen(screen) {
+            mainMenuScreen.classList.add('hidden');
+            stageMenuScreen.classList.add('hidden');
+            activityScreen.classList.add('hidden');
+            screen.classList.remove('hidden');
+        }
+
+        function showMainMenu() {
+            currentStage = null;
+            currentPatternData = null;
+            showScreen(mainMenuScreen);
+        }
+
+        function showStageMenu(stage) {
+            currentStage = stage;
+            showScreen(stageMenuScreen);
+            document.getElementById('stage-title').textContent = `Stage ${stage}`;
+            const container = document.getElementById('pattern-buttons-container');
+            container.innerHTML = '';
+            spellingData[stage].forEach((pattern, index) => {
+                const button = document.createElement('button');
+                button.className = "btn p-4 bg-gray-100 text-gray-800 font-semibold rounded-lg text-lg";
+                button.textContent = pattern.title;
+                button.onclick = () => startActivity(stage, index);
+                container.appendChild(button);
+            });
+        }
+        
+        function startActivity(stage, patternIndex) {
+            currentPatternData = spellingData[stage][patternIndex];
+            showScreen(activityScreen);
+            document.getElementById('back-to-stage-menu').onclick = () => showStageMenu(stage);
+            document.getElementById('activity-title').textContent = currentPatternData.title;
+            
+            // Reset and start Step 1
+            nextActivityStep(1, true); 
+        }
+
+        function nextActivityStep(step, isFirstStep = false) {
+             if (!isFirstStep) {
+                // Simple fade out
+                document.getElementById(`activity-step-${step-1}`).classList.add('opacity-50');
+             }
+
+            activitySteps.forEach(s => s.classList.add('hidden'));
+            const nextStepEl = document.getElementById(`activity-step-${step}`);
+            if(nextStepEl) {
+                nextStepEl.classList.remove('hidden');
+            }
+
+            // Setup the current step
+            switch(step) {
+                case 1: setupRuleIntro(); break;
+                case 2: setupFillGaps(); break;
+                case 3: setupWordFind(); break;
+                case 4: setupSentenceWriting(); break;
+            }
+        }
+
+
+        // --- Activity Setup Functions ---
+
+        // Step 1: Rule Introduction
+        function setupRuleIntro() {
+            document.getElementById('rule-text').textContent = currentPatternData.rule;
+            const exampleContainer = document.getElementById('example-words');
+            exampleContainer.innerHTML = '';
+            let wordsToShow = currentPatternData.examples ? currentPatternData.examples.map(e => e.contraction) : currentPatternData.words;
+            
+            wordsToShow.slice(0, 10).forEach(word => {
+                const p = document.createElement('p');
+                let patternRegex;
+                if (currentPatternData.pattern.includes('/')) {
+                    // Handle complex patterns like 'er/ur/ir'
+                    const patterns = currentPatternData.pattern.split('/').join('|');
+                    patternRegex = new RegExp(`(${patterns})`, 'gi');
+                } else if (currentPatternData.pattern === "'") {
+                     patternRegex = /(')/g;
+                } else {
+                    patternRegex = new RegExp(`(${currentPatternData.pattern})`, 'gi');
+                }
+                
+                p.innerHTML = word.replace(patternRegex, `<span class="pattern-highlight">$1</span>`);
+                exampleContainer.appendChild(p);
+            });
+        }
+        
+        // Step 2: Fill the Gaps
+        let fillGapsWords = [];
+        let currentGapWord = {};
+
+        function setupFillGaps() {
+             fillGapsWords = [...currentPatternData.words].sort(() => 0.5 - Math.random()).slice(0, 5);
+             document.getElementById('fill-gaps-container').classList.remove('hidden');
+             document.getElementById('fill-gaps-complete').classList.add('hidden');
+             nextGappedWord();
+        }
+        
+        function nextGappedWord() {
+            const feedbackEl = document.getElementById('fill-gaps-feedback');
+            feedbackEl.textContent = '';
+
+            if (fillGapsWords.length === 0) {
+                document.getElementById('fill-gaps-container').classList.add('hidden');
+                document.getElementById('fill-gaps-complete').classList.remove('hidden');
+                return;
+            }
+            
+            currentGapWord.correct = fillGapsWords.pop();
+            let pattern = currentPatternData.pattern;
+
+            if (pattern.includes('/')) { // Find which part of the complex pattern is in the word
+                 const patterns = pattern.split('/');
+                 pattern = patterns.find(p => currentGapWord.correct.includes(p)) || patterns[0];
+            }
+            
+            if (pattern === "'") {
+                 let example = currentPatternData.examples.find(e => e.contraction === currentGapWord.correct);
+                 if (example) {
+                    currentGapWord.gapped = example.base; // Show "I am" for "I'm"
+                 } else {
+                    currentGapWord.gapped = currentGapWord.correct.replace(pattern, "__");
+                 }
+            } else if (pattern === 'doubling') {
+                let base = currentPatternData.baseWords.find(b => currentGapWord.correct.startsWith(b));
+                currentGapWord.gapped = currentGapWord.correct.replace(new RegExp(`${base[base.length-1]}\\w+`), `__`);
+            }
+            else {
+                currentGapWord.gapped = currentGapWord.correct.replace(pattern, "__");
+            }
+
+            document.getElementById('gapped-word').textContent = currentGapWord.gapped;
+            const inputEl = document.getElementById('gapped-word-input');
+            inputEl.value = '';
+            inputEl.focus();
+        }
+        
+        function checkGappedWord() {
+            const inputEl = document.getElementById('gapped-word-input');
+            const feedbackEl = document.getElementById('fill-gaps-feedback');
+            if (inputEl.value.trim().toLowerCase() === currentGapWord.correct.toLowerCase()) {
+                feedbackEl.textContent = "Correct!";
+                feedbackEl.className = "h-6 mt-2 text-center font-semibold text-green-600";
+                setTimeout(nextGappedWord, 1200);
+            } else {
+                feedbackEl.textContent = `Not quite. The correct answer is: ${currentGapWord.correct}`;
+                 feedbackEl.className = "h-6 mt-2 text-center font-semibold text-red-600";
+                 setTimeout(nextGappedWord, 2500);
+            }
+        }
+        
+        // Step 3: Word Find
+        let wordFindState = {};
+
+        function setupWordFind() {
+            const wordsToFind = [...currentPatternData.words].sort(() => 0.5 - Math.random()).slice(0, 8);
+            if (wordsToFind.length < 6) { // Ensure at least 6 words if possible
+                const additional = [...currentPatternData.words].filter(w => !wordsToFind.includes(w)).slice(0, 6 - wordsToFind.length);
+                wordsToFind.push(...additional);
+            }
+            
+            wordFindState = {
+                gridSize: 10,
+                grid: [],
+                words: wordsToFind,
+                foundWords: [],
+                isSelecting: false,
+                startCell: null,
+                currentSelection: []
+            };
+
+            const listEl = document.getElementById('found-words-list');
+            listEl.innerHTML = '';
+            wordFindState.words.forEach(word => {
+                const li = document.createElement('li');
+                li.textContent = word;
+                li.id = `wordlist-${word}`;
+                listEl.appendChild(li);
+            });
+            
+            generateWordFindGrid();
+            renderWordFindGrid();
+            document.getElementById('word-find-complete').classList.add('hidden');
+        }
+
+        function generateWordFindGrid() {
+            // Initialize grid
+            wordFindState.grid = Array(wordFindState.gridSize).fill(null).map(() => Array(wordFindState.gridSize).fill(null));
+            const directions = [[0, 1], [1, 0], [1, 1], [-1, 0], [0, -1], [-1, -1], [1, -1], [-1, 1]];
+
+            wordFindState.words.forEach(word => {
+                let placed = false;
+                let attempts = 0;
+                while (!placed && attempts < 100) {
+                    const dir = directions[Math.floor(Math.random() * directions.length)];
+                    const r = Math.floor(Math.random() * wordFindState.gridSize);
+                    const c = Math.floor(Math.random() * wordFindState.gridSize);
+
+                    if (canPlaceWord(word, r, c, dir)) {
+                        for (let i = 0; i < word.length; i++) {
+                            wordFindState.grid[r + i * dir[0]][c + i * dir[1]] = word[i];
+                        }
+                        placed = true;
+                    }
+                    attempts++;
+                }
+            });
+
+            // Fill empty cells
+            const alphabet = "abcdefghijklmnopqrstuvwxyz";
+            for (let r = 0; r < wordFindState.gridSize; r++) {
+                for (let c = 0; c < wordFindState.gridSize; c++) {
+                    if (!wordFindState.grid[r][c]) {
+                        wordFindState.grid[r][c] = alphabet[Math.floor(Math.random() * alphabet.length)];
+                    }
+                }
+            }
+        }
+        
+        function canPlaceWord(word, r, c, dir) {
+            for (let i = 0; i < word.length; i++) {
+                const newR = r + i * dir[0];
+                const newC = c + i * dir[1];
+                if (newR < 0 || newR >= wordFindState.gridSize || newC < 0 || newC >= wordFindState.gridSize) return false;
+                const cell = wordFindState.grid[newR][newC];
+                if (cell && cell !== word[i]) return false;
+            }
+            return true;
+        }
+
+        function renderWordFindGrid() {
+            const gridEl = document.getElementById('word-find-grid');
+            gridEl.innerHTML = '';
+            for (let r = 0; r < wordFindState.gridSize; r++) {
+                for (let c = 0; c < wordFindState.gridSize; c++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'grid-cell';
+                    cell.textContent = wordFindState.grid[r][c];
+                    cell.dataset.r = r;
+                    cell.dataset.c = c;
+                    gridEl.appendChild(cell);
+                }
+            }
+        }
+        
+        function updateSelection(endCell) {
+            // Clear previous selection highlights
+            wordFindState.currentSelection.forEach(cell => cell.classList.remove('selecting'));
+            wordFindState.currentSelection = [];
+            
+            const startR = wordFindState.startCell.dataset.r * 1;
+            const startC = wordFindState.startCell.dataset.c * 1;
+            const endR = endCell.dataset.r * 1;
+            const endC = endCell.dataset.c * 1;
+            
+            // Determine direction
+            const dr = Math.sign(endR - startR);
+            const dc = Math.sign(endC - startC);
+
+            let r = startR, c = startC;
+            while(true) {
+                 const cell = document.querySelector(`.grid-cell[data-r='${r}'][data-c='${c}']`);
+                 if(cell) {
+                    cell.classList.add('selecting');
+                    wordFindState.currentSelection.push(cell);
+                 }
+                 if(r === endR && c === endC) break;
+                 r += dr;
+                 c += dc;
+            }
+        }
+        
+        function checkSelection() {
+            let selectedWord = wordFindState.currentSelection.map(cell => cell.textContent).join('');
+            const wordFound = wordFindState.words.includes(selectedWord);
+            
+            if (wordFound && !wordFindState.foundWords.includes(selectedWord)) {
+                wordFindState.foundWords.push(selectedWord);
+                wordFindState.currentSelection.forEach(cell => {
+                    cell.classList.remove('selecting');
+                    cell.classList.add('found');
+                });
+                document.getElementById(`wordlist-${selectedWord}`).classList.add('found');
+            } else {
+                 wordFindState.currentSelection.forEach(cell => cell.classList.remove('selecting'));
+            }
+
+            if (wordFindState.foundWords.length === wordFindState.words.length) {
+                document.getElementById('word-find-complete').classList.remove('hidden');
+            }
+        }
+        
+        // Step 4: Sentence Writing
+        function setupSentenceWriting() {
+            const reminderContainer = document.getElementById('sentence-words-reminder');
+            reminderContainer.innerHTML = '';
+            currentPatternData.words.slice(0, 8).forEach(word => {
+                const span = document.createElement('span');
+                span.textContent = word;
+                reminderContainer.appendChild(span);
+            });
+            document.getElementById('sentence-textarea').value = '';
+        }
+
+        // --- Event Listeners ---
+        document.getElementById('submit-gap-word-btn').addEventListener('click', checkGappedWord);
+        document.getElementById('gapped-word-input').addEventListener('keyup', (e) => {
+            if(e.key === 'Enter') checkGappedWord();
+        });
+        
+        // Word Find listeners
+        const wordFindGridEl = document.getElementById('word-find-grid');
+
+        const handleMouseDown = (e) => {
+            if (e.target.classList.contains('grid-cell')) {
+                wordFindState.isSelecting = true;
+                wordFindState.startCell = e.target;
+                updateSelection(e.target);
+            }
+        }
+
+        const handleMouseMove = (e) => {
+            if (wordFindState.isSelecting) {
+                let targetCell = e.target;
+                if (!e.target.classList.contains('grid-cell') && e.touches) { // Handle touch move over elements
+                    targetCell = document.elementFromPoint(e.touches[0].clientX, e.touches[0].clientY);
+                }
+                
+                if (targetCell && targetCell.classList.contains('grid-cell')) {
+                    updateSelection(targetCell);
+                }
+            }
+        }
+
+        const handleMouseUp = (e) => {
+            if (wordFindState.isSelecting) {
+                wordFindState.isSelecting = false;
+                checkSelection();
+            }
+        }
+
+        wordFindGridEl.addEventListener('mousedown', handleMouseDown);
+        wordFindGridEl.addEventListener('mousemove', handleMouseMove);
+        document.addEventListener('mouseup', handleMouseUp);
+        
+        // Touch events for mobile
+        wordFindGridEl.addEventListener('touchstart', (e) => { e.preventDefault(); handleMouseDown(e.touches[0]); });
+        wordFindGridEl.addEventListener('touchmove', (e) => { e.preventDefault(); handleMouseMove(e.touches[0]); });
+        document.addEventListener('touchend', (e) => { handleMouseUp(e); });
+
+    </script>
+</body>
+</html>
+
