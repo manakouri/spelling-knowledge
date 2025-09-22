@@ -649,39 +649,60 @@
         }
 
         function generateIncorrectSpelling(word, patternData) {
-            word = word.toLowerCase();
-            const p = patternData.pattern;
-            // Rule-based misspellings
-            if (p.includes('_')) { return word.replace(p.split('_')[0], '').replace(p.split('_')[1], p.split('_')[0]); } // magic e
-            if (p === 'kn' && word.startsWith('kn')) return word.substring(1);
-            if (p === 'wr' && word.startsWith('wr')) return word.substring(1);
-            if (p === 'mb' && word.endsWith('mb')) return word.slice(0, -1);
-            if (p === 'sc' && word.includes('sc')) return word.replace('sc', 's');
-            if (p === 'dge' && word.endsWith('dge')) return word.slice(0, -3) + 'ge';
-            if (p === 'tch' && word.endsWith('tch')) return word.slice(0, -3) + 'ch';
-            if (p === 'ck' && word.endsWith('ck')) return word.slice(0,-2) + 'k';
-            if (p === 'ph' && word.includes('ph')) return word.replace('ph', 'f');
-            if (p === 'ly') return word.slice(0, -2) + 'ley';
-            if (p === 'ful') return word + 'l'; // helpful -> helpfull
-            if (p === 'est') return word.slice(0, -3) + 'ist';
-            if (p === 'doubling') {
-                let base = patternData.baseWords.find(b => word.startsWith(b));
-                if(base) return base + word.substring(base.length + 1); // remove double
+            let incorrectWord = word;
+            let attempts = 0;
+            const allWordsInStage = spellingData[currentStage].flatMap(p => p.words.map(w => w.toLowerCase())); 
+
+            while (incorrectWord.toLowerCase() === word.toLowerCase() || allWordsInStage.includes(incorrectWord.toLowerCase())) {
+                if (attempts > 20) { 
+                    let i = Math.floor(Math.random() * (word.length - 1));
+                    if(word.length > 1 && word[i] !== word[i+1]) {
+                        incorrectWord = word.slice(0, i) + word[i+1] + word[i] + word.slice(i+2);
+                    } else { 
+                        incorrectWord = word + 's';
+                    }
+                    if(incorrectWord.toLowerCase() === word.toLowerCase()) incorrectWord = word + 'e';
+                    break;
+                }
+
+                word = word.toLowerCase();
+                const p = patternData.pattern;
+                let candidate = "";
+
+                const misspellings = {
+                    'a_e': () => word.replace(p.split('_')[0], '').replace(p.split('_')[1], 'a'),
+                    'i_e': () => word.replace(p.split('_')[0], '').replace(p.split('_')[1], 'i'),
+                    'o_e': () => word.replace(p.split('_')[0], '').replace(p.split('_')[1], 'o'),
+                    'u_e': () => word.replace(p.split('_')[0], '').replace(p.split('_')[1], 'u'),
+                    'e_e': () => word.replace(p.split('_')[0], '').replace(p.split('_')[1], 'e'),
+                    'kn': () => word.substring(1), 'wr': () => word.substring(1),
+                    'mb': () => word.slice(0, -1), 'sc': () => word.replace('sc', 's'),
+                    'dge': () => word.slice(0, -3) + 'ge', 'tch': () => word.slice(0, -3) + 'ch',
+                    'ck': () => word.slice(0,-2) + 'k', 'ph': () => word.replace('ph', 'f'),
+                    'ly': () => word.slice(0, -2) + 'ley', 'ful': () => word + 'l',
+                    'est': () => word.slice(0, -3) + 'ist', 'ff/ll/ss/zz': () => word.slice(0, -1),
+                    'ie': () => word.replace('ie', 'ei'), 'ei': () => word.replace('ei', 'ie'),
+                    'ue': () => word.replace('ue', 'ew'), 'ew': () => word.replace('ew', 'ue'),
+                    'oi': () => word.replace('oi', 'oy'), 'oy': () => word.replace('oy', 'oi'),
+                    'oa': () => word.replace('oa', 'ow'), 'ou': () => word.replace('ou', 'ow'),
+                    'ai': () => word.replace('ai', 'ay'), 'ay': () => word.replace('ay', 'ai')
+                };
+
+                if (misspellings[p]) {
+                    candidate = misspellings[p]();
+                } else if (p === 'doubling') {
+                    let base = patternData.baseWords.find(b => word.startsWith(b));
+                    candidate = (base) ? base + word.substring(base.length + 1) : word + 's';
+                } else {
+                    let i = Math.floor(Math.random() * (word.length - 1));
+                    candidate = (word.length > 2 && word[i] !== word[i+1]) ? word.slice(0, i) + word[i+1] + word[i] + word.slice(i+2) : word + 's';
+                }
+                incorrectWord = candidate;
+                attempts++;
             }
-             if (p === 'ff/ll/ss/zz') { // Floss rule
-                if (word.endsWith('ff')) return word.slice(0,-1);
-                if (word.endsWith('ll')) return word.slice(0,-1);
-                if (word.endsWith('ss')) return word.slice(0,-1);
-                if (word.endsWith('zz')) return word.slice(0,-1);
-            }
-            const vowelPairs = { 'ie':'ei', 'ei':'ie', 'ue':'ew', 'ew':'ue', 'oi':'oy', 'oy':'oi', 'oa':'ow', 'ow':'oa', 'ai':'ay', 'ay':'ai', 'ou':'ow'};
-            for(const key in vowelPairs) {
-                if(word.includes(key)) return word.replace(key, vowelPairs[key]);
-            }
-            // Fallback for simple patterns
-            if (word.length > 3) { let i = Math.floor(Math.random() * (word.length - 2)); return word.slice(0, i) + word[i+1] + word[i] + word.slice(i+2); }
-            return word + 's';
+            return incorrectWord;
         }
+
 
         function checkChallengeAnswer(chosenWord) {
             if (chosenWord === challengeState.currentCorrectAnswer) {
