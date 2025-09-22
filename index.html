@@ -134,7 +134,7 @@
             </div>
 
             <!-- 3. Word Find -->
-            <div id="activity-step-3" class="activity-step hidden p-6 bg-pink-50 border border-pink-200 rounded-lg mb-6">
+            <div id="activity-step-3" class="activity-step hidden p-6 border rounded-lg mb-6">
                  <h3 class="text-xl font-bold text-gray-800 mb-4">Word Find</h3>
                  <p class="text-lg text-gray-600 mb-4">Click and drag to find the hidden words.</p>
                  <div class="flex flex-col md:flex-row gap-6 items-start">
@@ -159,7 +159,7 @@
                 <div id="sentence-feedback" class="h-6 mt-2 text-center font-semibold text-red-600"></div>
                 <div id="sentence-buttons">
                     <button onclick="checkSentences()" id="check-sentence-btn" class="btn mt-6 w-full bg-[#F72585] text-white font-bold py-3 rounded-lg">Check My Sentences</button>
-                    <button onclick="showMainMenu()" id="finish-btn" class="btn mt-6 w-full bg-[#3A0CA3] text-white font-bold py-3 rounded-lg hidden">Finish & Return to Main Menu</button>
+                    <button onclick="showStageMenu(currentStage)" id="finish-btn" class="btn mt-6 w-full bg-[#3A0CA3] text-white font-bold py-3 rounded-lg hidden">Finish & Return to Stage Menu</button>
                 </div>
             </div>
         </div>
