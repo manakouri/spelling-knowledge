@@ -48,7 +48,7 @@
             border: 1px solid #d1d5db;
             border-radius: 0.25rem;
             cursor: pointer;
-            transition: background-color 0.1s;
+            transition: background-color: 0.1s;
         }
         .grid-cell.selecting {
             background-color: #4CC9F0; /* Palette Light Blue */
@@ -388,7 +388,7 @@
             });
         }
         
-        let fillGapsWords = [], currentGapWord = {};
+        let fillGapsWords = [], currentGapWord = {}, isSecondAttemptForThisWord = false;
         function setupFillGaps() {
              fillGapsWords = [...currentPatternData.words].sort(() => 0.5 - Math.random()).slice(0, 5);
              document.getElementById('fill-gaps-container').classList.remove('hidden');
@@ -397,6 +397,7 @@
         }
         
         function nextGappedWord() {
+            isSecondAttemptForThisWord = false;
             const feedbackEl = document.getElementById('fill-gaps-feedback');
             feedbackEl.textContent = '';
             feedbackEl.className = "h-10 mt-2 text-center font-semibold";
@@ -453,13 +454,23 @@
             const inputEl = document.getElementById('gapped-word-input');
             const feedbackEl = document.getElementById('fill-gaps-feedback');
             if (inputEl.value.trim().toLowerCase() === currentGapWord.correct.toLowerCase()) {
+                isSecondAttemptForThisWord = false;
                 feedbackEl.textContent = "Correct!";
                 feedbackEl.classList.add("text-green-600");
                 setTimeout(nextGappedWord, 1200);
             } else {
-                feedbackEl.innerHTML = `Not quite. Read this aloud: <strong class="text-indigo-600">${currentGapWord.correct}</strong>`;
-                 feedbackEl.classList.add("text-red-600");
-                 setTimeout(nextGappedWord, 2500);
+                if (!isSecondAttemptForThisWord) {
+                    isSecondAttemptForThisWord = true;
+                    feedbackEl.innerHTML = `Not quite. Read aloud: <strong class="text-[#7209B7]">${currentGapWord.correct}</strong>. Try again.`;
+                    feedbackEl.classList.add("text-red-600");
+                    inputEl.value = '';
+                    inputEl.focus();
+                } else {
+                    isSecondAttemptForThisWord = false;
+                    feedbackEl.innerHTML = `The correct spelling is: <strong class="text-[#7209B7]">${currentGapWord.correct}</strong>.`;
+                    feedbackEl.classList.add("text-red-600");
+                    setTimeout(nextGappedWord, 2500);
+                }
             }
         }
         
