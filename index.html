@@ -25,7 +25,7 @@
             box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
         }
         .pattern-highlight {
-            color: #4f46e5;
+            color: #7209B7; /* Palette Purple */
             font-weight: 700;
         }
         /* Word Find Styles */
@@ -51,11 +51,11 @@
             transition: background-color 0.1s;
         }
         .grid-cell.selecting {
-            background-color: #a5b4fc; /* indigo-300 */
+            background-color: #4CC9F0; /* Palette Light Blue */
             color: white;
         }
         .grid-cell.found {
-            background-color: #4ade80; /* green-400 */
+            background-color: #F72585; /* Palette Pink */
             color: white;
         }
         #found-words-list li.found {
@@ -80,10 +80,10 @@
         <div id="main-menu-screen">
             <h1 class="text-4xl font-bold text-gray-800 mb-8">Spelling Skills Challenge</h1>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <button onclick="showStageMenu(3)" class="btn p-8 bg-blue-500 text-white font-bold rounded-xl text-2xl">Stage 3</button>
-                <button onclick="showStageMenu(4)" class="btn p-8 bg-green-500 text-white font-bold rounded-xl text-2xl">Stage 4</button>
-                <button onclick="showStageMenu(5)" class="btn p-8 bg-yellow-500 text-white font-bold rounded-xl text-2xl">Stage 5</button>
-                <button onclick="showStageMenu(6)" class="btn p-8 bg-red-500 text-white font-bold rounded-xl text-2xl">Stage 6</button>
+                <button onclick="showStageMenu(3)" class="btn p-8 bg-[#4361EE] text-white font-bold rounded-xl text-2xl">Stage 3</button>
+                <button onclick="showStageMenu(4)" class="btn p-8 bg-[#4CC9F0] text-white font-bold rounded-xl text-2xl">Stage 4</button>
+                <button onclick="showStageMenu(5)" class="btn p-8 bg-[#F72585] text-white font-bold rounded-xl text-2xl">Stage 5</button>
+                <button onclick="showStageMenu(6)" class="btn p-8 bg-[#7209B7] text-white font-bold rounded-xl text-2xl">Stage 6</button>
             </div>
         </div>
 
@@ -97,44 +97,44 @@
             <div id="pattern-buttons-container" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-8">
                 <!-- Pattern buttons will be inserted here -->
             </div>
-            <button id="timed-challenge-btn" class="btn p-4 bg-purple-600 text-white font-bold rounded-lg text-xl w-full">Timed Challenge &rarr;</button>
+            <button id="timed-challenge-btn" class="btn p-4 bg-[#3A0CA3] text-white font-bold rounded-lg text-xl w-full">Timed Challenge &rarr;</button>
         </div>
 
         <!-- Activity Screen -->
         <div id="activity-screen" class="hidden text-left">
             <div class="flex items-center justify-between mb-6">
                 <button id="back-to-stage-menu" class="btn bg-gray-200 text-gray-700 font-bold py-2 px-4 rounded-lg">&larr; Back to Stage</button>
-                 <h2 id="activity-title" class="text-2xl md:text-3xl font-bold text-indigo-700 text-center"></h2>
+                 <h2 id="activity-title" class="text-2xl md:text-3xl font-bold text-[#3A0CA3] text-center"></h2>
                  <div></div>
             </div>
 
             <!-- 1. Rule Introduction -->
-            <div id="activity-step-1" class="activity-step p-6 bg-indigo-50 border border-indigo-200 rounded-lg mb-6">
+            <div id="activity-step-1" class="activity-step p-6 bg-blue-50 border border-blue-200 rounded-lg mb-6">
                 <h3 class="text-xl font-bold text-gray-800 mb-2">The Rule</h3>
                 <p id="rule-text" class="text-lg text-gray-700 mb-4"></p>
                 <h4 class="font-semibold text-gray-800 mb-2">Read these example words aloud:</h4>
                 <div id="example-words" class="flex flex-wrap gap-x-4 gap-y-2 text-lg"></div>
-                 <button onclick="nextActivityStep(2)" class="btn mt-6 w-full bg-indigo-600 text-white font-bold py-3 rounded-lg">Start Practising &rarr;</button>
+                 <button onclick="nextActivityStep(2)" class="btn mt-6 w-full bg-[#4361EE] text-white font-bold py-3 rounded-lg">Start Practising &rarr;</button>
             </div>
 
             <!-- 2. Fill the Gaps -->
-            <div id="activity-step-2" class="activity-step hidden p-6 bg-blue-50 border border-blue-200 rounded-lg mb-6">
+            <div id="activity-step-2" class="activity-step hidden p-6 bg-cyan-50 border border-cyan-200 rounded-lg mb-6">
                 <h3 class="text-xl font-bold text-gray-800 mb-4">Fill the Gaps</h3>
                 <p class="text-lg text-gray-600 mb-4">Type the full word correctly in the box.</p>
                 <div id="fill-gaps-container">
                     <p id="gapped-word" class="text-4xl font-bold text-center my-6 tracking-widest"></p>
-                    <input type="text" id="gapped-word-input" class="w-full text-center text-2xl p-3 border-2 border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" autocomplete="off">
+                    <input type="text" id="gapped-word-input" class="w-full text-center text-2xl p-3 border-2 border-gray-300 rounded-lg focus:ring-[#4CC9F0] focus:border-[#4CC9F0]" autocomplete="off">
                     <div id="fill-gaps-feedback" class="h-10 mt-2 text-center font-semibold"></div>
-                    <button id="submit-gap-word-btn" class="btn mt-4 w-full bg-blue-600 text-white font-bold py-3 rounded-lg">Check Answer</button>
+                    <button id="submit-gap-word-btn" class="btn mt-4 w-full bg-[#4CC9F0] text-white font-bold py-3 rounded-lg">Check Answer</button>
                 </div>
                  <div id="fill-gaps-complete" class="hidden text-center">
                     <p class="text-2xl font-bold text-green-600 mb-4">Great work!</p>
-                    <button onclick="nextActivityStep(3)" class="btn w-full bg-indigo-600 text-white font-bold py-3 rounded-lg">Go to Word Find &rarr;</button>
+                    <button onclick="nextActivityStep(3)" class="btn w-full bg-[#4361EE] text-white font-bold py-3 rounded-lg">Go to Word Find &rarr;</button>
                 </div>
             </div>
 
             <!-- 3. Word Find -->
-            <div id="activity-step-3" class="activity-step hidden p-6 bg-green-50 border border-green-200 rounded-lg mb-6">
+            <div id="activity-step-3" class="activity-step hidden p-6 bg-pink-50 border border-pink-200 rounded-lg mb-6">
                  <h3 class="text-xl font-bold text-gray-800 mb-4">Word Find</h3>
                  <p class="text-lg text-gray-600 mb-4">Click and drag to find the hidden words.</p>
                  <div class="flex flex-col md:flex-row gap-6 items-start">
@@ -146,20 +146,20 @@
                  </div>
                  <div id="word-find-complete" class="hidden text-center mt-6">
                     <p class="text-2xl font-bold text-green-600 mb-4">You found them all!</p>
-                    <button onclick="nextActivityStep(4)" class="btn w-full bg-indigo-600 text-white font-bold py-3 rounded-lg">Write Sentences &rarr;</button>
+                    <button onclick="nextActivityStep(4)" class="btn w-full bg-[#4361EE] text-white font-bold py-3 rounded-lg">Write Sentences &rarr;</button>
                 </div>
             </div>
 
             <!-- 4. Sentence Writing -->
-            <div id="activity-step-4" class="activity-step hidden p-6 bg-yellow-50 border border-yellow-200 rounded-lg">
+            <div id="activity-step-4" class="activity-step hidden p-6 bg-purple-50 border border-purple-200 rounded-lg">
                 <h3 class="text-xl font-bold text-gray-800 mb-4">Write Your Own Sentences</h3>
                 <p class="text-lg text-gray-600 mb-4">Use some of the words from this pattern to write 2-3 sentences. Try reading your sentences aloud to check if they make sense.</p>
                 <div id="sentence-words-reminder" class="flex flex-wrap gap-x-3 gap-y-1 text-gray-500 mb-4"></div>
-                <textarea id="sentence-textarea" class="w-full h-40 p-3 border-2 border-gray-300 rounded-lg text-lg focus:ring-indigo-500 focus:border-indigo-500" placeholder="Write your sentences here..."></textarea>
+                <textarea id="sentence-textarea" class="w-full h-40 p-3 border-2 border-gray-300 rounded-lg text-lg focus:ring-[#7209B7] focus:border-[#7209B7]" placeholder="Write your sentences here..."></textarea>
                 <div id="sentence-feedback" class="h-6 mt-2 text-center font-semibold text-red-600"></div>
                 <div id="sentence-buttons">
-                    <button onclick="checkSentences()" id="check-sentence-btn" class="btn mt-6 w-full bg-yellow-600 text-white font-bold py-3 rounded-lg">Check My Sentences</button>
-                    <button onclick="showMainMenu()" id="finish-btn" class="btn mt-6 w-full bg-indigo-600 text-white font-bold py-3 rounded-lg hidden">Finish & Return to Main Menu</button>
+                    <button onclick="checkSentences()" id="check-sentence-btn" class="btn mt-6 w-full bg-[#F72585] text-white font-bold py-3 rounded-lg">Check My Sentences</button>
+                    <button onclick="showMainMenu()" id="finish-btn" class="btn mt-6 w-full bg-[#3A0CA3] text-white font-bold py-3 rounded-lg hidden">Finish & Return to Main Menu</button>
                 </div>
             </div>
         </div>
@@ -168,7 +168,7 @@
         <div id="challenge-screen" class="hidden">
             <div class="flex items-center justify-between mb-6">
                  <button id="back-to-stage-menu-from-challenge" class="btn bg-gray-200 text-gray-700 font-bold py-2 px-4 rounded-lg">&larr; Back to Stage</button>
-                 <h2 class="text-2xl md:text-3xl font-bold text-purple-700 text-center">Timed Challenge</h2>
+                 <h2 class="text-2xl md:text-3xl font-bold text-[#3A0CA3] text-center">Timed Challenge</h2>
                  <div></div>
             </div>
 
@@ -176,14 +176,14 @@
             <div id="challenge-intro">
                 <p class="text-lg text-gray-600 mb-4">Choose the correctly spelled word as quickly as you can. You have 2 minutes!</p>
                 <p class="text-xl font-semibold mb-6">High Score: <span id="high-score">0</span></p>
-                <button onclick="startChallenge()" class="btn w-full p-6 bg-purple-600 text-white font-bold rounded-xl text-3xl">Go!</button>
+                <button onclick="startChallenge()" class="btn w-full p-6 bg-[#3A0CA3] text-white font-bold rounded-xl text-3xl">Go!</button>
             </div>
 
             <!-- Game -->
             <div id="challenge-game" class="hidden">
                 <div class="flex justify-between items-center text-2xl font-bold mb-8">
-                    <div class="text-gray-700">Score: <span id="current-score" class="text-purple-700">0</span></div>
-                    <div class="text-gray-700">Time: <span id="timer" class="text-purple-700">120</span>s</div>
+                    <div class="text-gray-700">Score: <span id="current-score" class="text-[#7209B7]">0</span></div>
+                    <div class="text-gray-700">Time: <span id="timer" class="text-[#7209B7]">120</span>s</div>
                 </div>
                 <div id="challenge-words" class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <button id="choice-1" class="btn challenge-choice-btn p-8 rounded-xl text-4xl font-semibold"></button>
@@ -194,14 +194,14 @@
             <!-- Results -->
             <div id="challenge-results" class="hidden">
                  <p class="text-4xl font-bold text-gray-800 mb-2">Time's Up!</p>
-                 <p class="text-2xl text-gray-700 mb-6">Final Score: <span id="final-score" class="font-bold text-purple-700"></span></p>
+                 <p class="text-2xl text-gray-700 mb-6">Final Score: <span id="final-score" class="font-bold text-[#7209B7]"></span></p>
                  <div id="new-high-score-msg" class="text-2xl font-bold text-green-500 mb-6 hidden">New High Score!</div>
                  <div id="patterns-to-review-container" class="text-left p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
                     <h4 class="font-bold text-lg text-yellow-800 mb-2">Spelling patterns to review:</h4>
                     <ul id="patterns-to-review-list" class="list-disc list-inside text-yellow-700">
                     </ul>
                  </div>
-                 <button onclick="showStageMenu(currentStage)" class="btn mt-8 w-full bg-purple-600 text-white font-bold py-3 rounded-lg text-lg">Play Again</button>
+                 <button onclick="showStageMenu(currentStage)" class="btn mt-8 w-full bg-[#3A0CA3] text-white font-bold py-3 rounded-lg text-lg">Play Again</button>
             </div>
         </div>
         
@@ -371,7 +371,7 @@
                 const p = document.createElement('p');
                 let patternToHighlight = currentPatternData.pattern;
                 if(patternToHighlight.includes('_')) {
-                    patternToHighlight = patternToHighlight.replace('_', '.');
+                    patternToHighlight = patternToHighlight.replace(/_/g, '.');
                 }
                 
                 let patternRegex;
@@ -415,11 +415,18 @@
                  replacementPattern = patterns.find(p => currentGapWord.correct.includes(p)) || patterns[0];
             }
             
-            let gap = "_".repeat(replacementPattern.replace('_', '').length);
+            let gap = "_".repeat(replacementPattern.replace(/_/g, '').length);
             
             if (pattern.includes('_')) { // for a_e, i_e etc.
                 const parts = replacementPattern.split('_');
-                currentGapWord.gapped = currentGapWord.correct.replace(parts[0], '_').replace(parts[1], '_');
+                const wordArr = currentGapWord.correct.split('');
+                const firstIndex = currentGapWord.correct.indexOf(parts[0]);
+                const lastIndex = currentGapWord.correct.lastIndexOf(parts[1]);
+
+                if (firstIndex > -1) wordArr[firstIndex] = '_';
+                if (lastIndex > -1) wordArr[lastIndex] = '_';
+
+                currentGapWord.gapped = wordArr.join('');
             } else if (pattern === "'") {
                  let example = currentPatternData.examples.find(e => e.contraction === currentGapWord.correct);
                  if (example) currentGapWord.gapped = example.base;
@@ -644,26 +651,34 @@
         function generateIncorrectSpelling(word, patternData) {
             word = word.toLowerCase();
             const p = patternData.pattern;
-            if (p.includes('_')) { // a_e -> ae
-                return word.replace(p.split('_')[0], '').replace(p.split('_')[1], p.split('_').join(''));
-            }
-            if (p === 'kn' && word.startsWith('kn')) return word.substring(1); // kn -> n
-            if (p === 'wr' && word.startsWith('wr')) return word.substring(1); // wr -> r
-            if (p === 'mb' && word.endsWith('mb')) return word.slice(0, -1); // mb -> m
-            if (p === 'sc' && word.startsWith('sc')) return 's' + word; // sc -> ssc
+            // Rule-based misspellings
+            if (p.includes('_')) { return word.replace(p.split('_')[0], '').replace(p.split('_')[1], p.split('_')[0]); } // magic e
+            if (p === 'kn' && word.startsWith('kn')) return word.substring(1);
+            if (p === 'wr' && word.startsWith('wr')) return word.substring(1);
+            if (p === 'mb' && word.endsWith('mb')) return word.slice(0, -1);
+            if (p === 'sc' && word.includes('sc')) return word.replace('sc', 's');
             if (p === 'dge' && word.endsWith('dge')) return word.slice(0, -3) + 'ge';
             if (p === 'tch' && word.endsWith('tch')) return word.slice(0, -3) + 'ch';
             if (p === 'ck' && word.endsWith('ck')) return word.slice(0,-2) + 'k';
+            if (p === 'ph' && word.includes('ph')) return word.replace('ph', 'f');
             if (p === 'ly') return word.slice(0, -2) + 'ley';
-            if (p === 'ful') return word.slice(0,-3) + 'full';
+            if (p === 'ful') return word + 'l'; // helpful -> helpfull
+            if (p === 'est') return word.slice(0, -3) + 'ist';
             if (p === 'doubling') {
                 let base = patternData.baseWords.find(b => word.startsWith(b));
                 if(base) return base + word.substring(base.length + 1); // remove double
             }
-            const vowelPairs = { 'ie':'ei', 'ei':'ie', 'ue':'ew', 'ew':'ue', 'oi':'oy', 'oy':'oi', 'oa':'ow', 'ow':'oa', 'ai':'ay', 'ay':'ai' };
+             if (p === 'ff/ll/ss/zz') { // Floss rule
+                if (word.endsWith('ff')) return word.slice(0,-1);
+                if (word.endsWith('ll')) return word.slice(0,-1);
+                if (word.endsWith('ss')) return word.slice(0,-1);
+                if (word.endsWith('zz')) return word.slice(0,-1);
+            }
+            const vowelPairs = { 'ie':'ei', 'ei':'ie', 'ue':'ew', 'ew':'ue', 'oi':'oy', 'oy':'oi', 'oa':'ow', 'ow':'oa', 'ai':'ay', 'ay':'ai', 'ou':'ow'};
             for(const key in vowelPairs) {
                 if(word.includes(key)) return word.replace(key, vowelPairs[key]);
             }
+            // Fallback for simple patterns
             if (word.length > 3) { let i = Math.floor(Math.random() * (word.length - 2)); return word.slice(0, i) + word[i+1] + word[i] + word.slice(i+2); }
             return word + 's';
         }
