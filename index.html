@@ -770,32 +770,35 @@
             return { x: e.clientX, y: e.clientY };
         }
     }
-        
-        const wordFindGridEl = document.getElementById('word-find-grid');
-        let isPointerDown = false;
-        const handlePointerDown = (e) => {
-            let target = document.elementFromPoint(e.clientX, e.clientY);
-            if (target && target.classList.contains('grid-cell')) {
-                e.preventDefault(); isPointerDown = true;
-                wordFindState.startCell = target; updateSelection(target);
-            }
-        }
-        const handlePointerMove = (e) => {
-            if (isPointerDown) {
-                let target = document.elementFromPoint(e.clientX, e.clientY);
-                if (target && target.classList.contains('grid-cell')) {
-                    e.preventDefault(); updateSelection(target);
-                }
-            }
-        }
-        const handlePointerUp = (e) => { if (isPointerDown) { isPointerDown = false; checkSelection(); } }
 
-        wordFindGridEl.addEventListener('mousedown', handlePointerDown);
-        wordFindGridEl.addEventListener('mousemove', handlePointerMove);
-        document.addEventListener('mouseup', handlePointerUp);
-        wordFindGridEl.addEventListener('touchstart', handlePointerDown, { passive: false });
-        wordFindGridEl.addEventListener('touchmove', handlePointerMove, { passive: false });
-        document.addEventListener('touchend', handlePointerUp);
+    const wordFindGridEl = document.getElementById('word-find-grid');
+    let isPointerDown = false;
+
+    const handlePointerDown = (e) => {
+        const coords = getEventCoords(e);
+        let target = document.elementFromPoint(coords.x, coords.y);
+        if (target && target.classList.contains('grid-cell')) {
+            e.preventDefault(); isPointerDown = true;
+            wordFindState.startCell = target; updateSelection(target);
+        }
+    }
+    const handlePointerMove = (e) => {
+        if (isPointerDown) {
+            const coords = getEventCoords(e);
+            let target = document.elementFromPoint(coords.x, coords.y);
+            if (target && target.classList.contains('grid-cell')) {
+                e.preventDefault(); updateSelection(target);
+            }
+        }
+    }
+    const handlePointerUp = (e) => { if (isPointerDown) { isPointerDown = false; checkSelection(); } }
+
+    wordFindGridEl.addEventListener('mousedown', handlePointerDown);
+    wordFindGridEl.addEventListener('mousemove', handlePointerMove);
+    document.addEventListener('mouseup', handlePointerUp);
+    wordFindGridEl.addEventListener('touchstart', handlePointerDown, { passive: false });
+    wordFindGridEl.addEventListener('touchmove', handlePointerMove, { passive: false });
+    document.addEventListener('touchend', handlePointerUp);
 
     </script>
 </body>
