@@ -759,6 +759,17 @@
         document.getElementById('gapped-word-input').addEventListener('keyup', (e) => { if(e.key === 'Enter') checkGappedWord(); });
         document.getElementById('choice-1').onclick = () => checkChallengeAnswer(document.getElementById('choice-1').textContent);
         document.getElementById('choice-2').onclick = () => checkChallengeAnswer(document.getElementById('choice-2').textContent);
+
+        function getEventCoords(e) {
+        if (e.touches && e.touches.length > 0) {
+            return { x: e.touches[0].clientX, y: e.touches[0].clientY };
+        } else if (e.changedTouches && e.changedTouches.length > 0) {
+            // Use changedTouches for touchend
+            return { x: e.changedTouches[0].clientX, y: e.changedTouches[0].clientY };
+        } else {
+            return { x: e.clientX, y: e.clientY };
+        }
+    }
         
         const wordFindGridEl = document.getElementById('word-find-grid');
         let isPointerDown = false;
