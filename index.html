@@ -643,16 +643,6 @@
                 return;
             }
 
-            // Spell Check
-            const stageWords = new Set(spellingData[currentStage].flatMap(p => getWordsList(p).map(w => w.toLowerCase())));
-            const userWords = text.toLowerCase().match(/\b(\w+)\b/g) || [];
-            const misspelledWords = userWords.filter(word => !stageWords.has(word));
-            
-            if (misspelledWords.length > 0) {
-                feedback.innerHTML = `Good sentences! I found a few spelling errors. Please check these words: <br> <strong class="text-red-500">${[...new Set(misspelledWords)].join(', ')}</strong>`;
-                return;
-            }
-
             // All checks passed
             feedback.textContent = "Excellent sentences!";
             feedback.className = "h-auto mt-2 text-center font-semibold text-green-600";
