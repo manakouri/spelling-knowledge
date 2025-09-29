@@ -402,7 +402,7 @@
         
         let fillGapsWords = [], currentGapWord = {}, isSecondAttemptForThisWord = false;
         function setupFillGaps() {
-             fillGapsWords = [...currentPatternData.words].sort(() => 0.5 - Math.random()).slice(0, 5);
+             fillGapsWords = [...currentPatternData.words].sort(() => 0.5 - Math.random()).slice(0, 10);
              document.getElementById('fill-gaps-container').classList.remove('hidden');
              document.getElementById('fill-gaps-complete').classList.add('hidden');
              nextGappedWord();
@@ -485,30 +485,41 @@
         
         let wordFindState = {};
         function setupWordFind() {
-            let wordsToFind = getWordsList(currentPatternData)
-                .map(w => w.toLowerCase())
-                .filter(w => w.length <= 10);
+    let gridSize = 10; // Ensure this matches your grid setup
+    let wordsToFind = getWordsList(currentPatternData)
+        .map(w => w.toLowerCase())
+        .filter(w => w.length <= gridSize);
 
-            wordsToFind = [...new Set(wordsToFind)].sort(() => 0.5 - Math.random()).slice(0, 8);
-            
-            if (wordsToFind.length < 6 && getWordsList(currentPatternData).length >= 6) { 
-                const additional = getWordsList(currentPatternData).filter(w => w.length <= 10 && !wordsToFind.includes(w)).slice(0, 6 - wordsToFind.length);
-                wordsToFind.push(...additional.map(w => w.toLowerCase()));
-            }
+    wordsToFind = [...new Set(wordsToFind)].sort(() => 0.5 - Math.random()).slice(0, 8);
 
-            wordFindState = {gridSize: 10, grid: [], words: wordsToFind, foundWords: [], isSelecting: false, startCell: null, currentSelection: []};
-            const listEl = document.getElementById('found-words-list');
-            listEl.innerHTML = '';
-            wordFindState.words.forEach(word => {
-                const li = document.createElement('li');
-                li.textContent = word;
-                li.id = `wordlist-${word}`;
-                listEl.appendChild(li);
-            });
-            generateWordFindGrid();
-            renderWordFindGrid();
-            document.getElementById('word-find-complete').classList.add('hidden');
-        }
+    if (wordsToFind.length < 6 && getWordsList(currentPatternData).length >= 6) { 
+        const additional = getWordsList(currentPatternData)
+            .filter(w => w.length <= gridSize && !wordsToFind.includes(w))
+            .slice(0, 6 - wordsToFind.length);
+        wordsToFind.push(...additional.map(w => w.toLowerCase()));
+    }
+
+    wordFindState = {
+        gridSize: gridSize,
+        grid: [],
+        words: wordsToFind,
+        foundWords: [],
+        isSelecting: false,
+        startCell: null,
+        currentSelection: []
+    };
+    const listEl = document.getElementById('found-words-list');
+    listEl.innerHTML = '';
+    wordFindState.words.forEach(word => {
+        const li = document.createElement('li');
+        li.textContent = word;
+        li.id = `wordlist-${word}`;
+        listEl.appendChild(li);
+    });
+    generateWordFindGrid();
+    renderWordFindGrid();
+    document.getElementById('word-find-complete').classList.add('hidden');
+}
 
         function generateWordFindGrid() {
             wordFindState.grid = Array(wordFindState.gridSize).fill(null).map(() => Array(wordFindState.gridSize).fill(null));
