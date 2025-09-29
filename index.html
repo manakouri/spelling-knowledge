@@ -484,35 +484,29 @@
         }
         
         let wordFindState = {};
-        function setupWordFind() {
-    // Dynamically get grid size (e.g., 7 for mobile, or 10 for desktop)
+function setupWordFind() {
     let gridSize = window.innerWidth < 640 ? 7 : 10;
-
-    // Only select words that fit the grid
-    let wordsToFind = getWordsList(currentPatternData)
+    let wordsToTry = getWordsList(currentPatternData)
         .map(w => w.toLowerCase())
         .filter(w => w.length <= gridSize);
 
-    // Limit to 8 words, or fewer if not enough fit
-    wordsToFind = [...new Set(wordsToFind)].sort(() => 0.5 - Math.random()).slice(0, Math.min(8, wordsToFind.length));
+    // Shuffle and pick up to 8 candidates to attempt to place
+    wordsToTry = [...new Set(wordsToTry)].sort(() => 0.5 - Math.random()).slice(0, Math.min(8, wordsToTry.length));
 
-    // If not enough, pad with additional fitting words if possible
-    if (wordsToFind.length < 6 && getWordsList(currentPatternData).length >= 6) { 
-        const additional = getWordsList(currentPatternData)
-            .filter(w => w.length <= gridSize && !wordsToFind.includes(w))
-            .slice(0, 6 - wordsToFind.length);
-        wordsToFind.push(...additional.map(w => w.toLowerCase()));
-    }
+    // Generate grid and get only successfully-placed words
+    let placedWords = generateWordFindGrid(gridSize, wordsToTry);
 
     wordFindState = {
         gridSize: gridSize,
-        grid: [],
-        words: wordsToFind,
+        grid: placedWords.grid,
+        words: placedWords.words,
         foundWords: [],
         isSelecting: false,
         startCell: null,
         currentSelection: []
     };
+
+    // Render only placed words in the list
     const listEl = document.getElementById('found-words-list');
     listEl.innerHTML = '';
     wordFindState.words.forEach(word => {
@@ -521,59 +515,63 @@
         li.id = `wordlist-${word}`;
         listEl.appendChild(li);
     });
-    generateWordFindGrid();
     renderWordFindGrid();
     document.getElementById('word-find-complete').classList.add('hidden');
 }
 
-// Ensure words are only placed if they fit inside the grid
-function generateWordFindGrid() {
-    wordFindState.grid = Array(wordFindState.gridSize).fill(null).map(() => Array(wordFindState.gridSize).fill(null));
+// Returns {grid, words: [placed words]}
+function generateWordFindGrid(gridSize, wordsToTry) {
+    let grid = Array(gridSize).fill(null).map(() => Array(gridSize).fill(null));
     const directions = [
         [0, 1], [1, 0], [1, 1], [0, -1], [-1, 0], [-1, -1], [1, -1], [-1, 1]
     ];
-    wordFindState.words.forEach(word => {
+    let placedWords = [];
+    wordsToTry.forEach(word => {
         let placed = false, attempts = 0;
         while (!placed && attempts < 200) {
             const dir = directions[Math.floor(Math.random() * directions.length)];
-            const maxRow = dir[0] === 1 ? wordFindState.gridSize - word.length : dir[0] === -1 ? word.length - 1 : wordFindState.gridSize - 1;
-            const maxCol = dir[1] === 1 ? wordFindState.gridSize - word.length : dir[1] === -1 ? word.length - 1 : wordFindState.gridSize - 1;
-            const r = Math.floor(Math.random() * (wordFindState.gridSize));
-            const c = Math.floor(Math.random() * (wordFindState.gridSize));
+            const maxRow = dir[0] === 1 ? gridSize - word.length : dir[0] === -1 ? word.length - 1 : gridSize - 1;
+            const maxCol = dir[1] === 1 ? gridSize - word.length : dir[1] === -1 ? word.length - 1 : gridSize - 1;
+            const r = Math.floor(Math.random() * gridSize);
+            const c = Math.floor(Math.random() * gridSize);
             // Only try if starting point keeps word in-bounds
             if (
                 r >= 0 && r <= maxRow &&
                 c >= 0 && c <= maxCol &&
-                canPlaceWord(word, r, c, dir)
+                canPlaceWord(word, r, c, dir, grid, gridSize)
             ) {
                 for (let i = 0; i < word.length; i++)
-                    wordFindState.grid[r + i * dir[0]][c + i * dir[1]] = word[i];
+                    grid[r + i * dir[0]][c + i * dir[1]] = word[i];
                 placed = true;
+                placedWords.push(word);
             }
             attempts++;
         }
     });
+    // Fill unused cells
     const alphabet = "abcdefghijklmnopqrstuvwxyz";
-    for (let r = 0; r < wordFindState.gridSize; r++) {
-        for (let c = 0; c < wordFindState.gridSize; c++) {
-            if (!wordFindState.grid[r][c]) wordFindState.grid[r][c] = alphabet[Math.floor(Math.random() * alphabet.length)];
+    for (let r = 0; r < gridSize; r++) {
+        for (let c = 0; c < gridSize; c++) {
+            if (!grid[r][c]) grid[r][c] = alphabet[Math.floor(Math.random() * alphabet.length)];
         }
     }
+    return {grid, words: placedWords};
 }
 
-// Helper: Only place if word fits and does not collide
-function canPlaceWord(word, r, c, dir) {
+function canPlaceWord(word, r, c, dir, grid, gridSize) {
     for (let i = 0; i < word.length; i++) {
         const newR = r + i * dir[0], newC = c + i * dir[1];
         if (
-            newR < 0 || newR >= wordFindState.gridSize ||
-            newC < 0 || newC >= wordFindState.gridSize
+            newR < 0 || newR >= gridSize ||
+            newC < 0 || newC >= gridSize
         ) return false;
-        const cell = wordFindState.grid[newR][newC];
+        const cell = grid[newR][newC];
         if (cell && cell !== word[i]) return false;
     }
     return true;
 }
+
+// No change needed for renderWordFindGrid() and other logic
 
         function renderWordFindGrid() {
             const gridEl = document.getElementById('word-find-grid');
