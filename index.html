@@ -827,6 +827,13 @@
         wordFindGridEl.addEventListener('pointermove', handlePointerMove);
         document.addEventListener('pointerup', handlePointerUp);
 
+        // Prevent grid from being dragged or moved on touch devices
+        wordFindGridEl.addEventListener('touchmove', function(e) {
+            e.preventDefault();
+        }, { passive: false });
+        wordFindGridEl.addEventListener('pointermove', function(e) {
+            e.preventDefault();
+        }, { passive: false });
     </script>
 </body>
 </html>
