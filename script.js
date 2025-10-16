@@ -72,7 +72,21 @@
                 { title: "Prefix 'bi-'", pattern: "bi", rule: "A prefix meaning 'two'.", words: ["bicycle", "bilingual", "biannual", "bicep", "binoculars"] },
                 { title: "Prefix 'semi-'", pattern: "semi", rule: "A prefix meaning 'half'.", words: ["semicircle", "semifinal", "semicolon", "semiconscious"] },
                 { title: "Plural '-es'", pattern: "es", rule: "Add '-es' to make words plural that end in s, x, z, ch, or sh.", words: ["foxes", "buses", "matches", "kisses", "quizzes", "atlases", "cries"], baseWords: ["fox", "bus", "match", "kiss", "quiz", "atlas", "cry"] },
-                { title: "Plural '-ves'", pattern: "ves", rule: "For most nouns ending in 'f' or 'fe', change the f/fe to 'v' and add '-es'.", words: ["leaves", "wolves", "lives", "thieves", "knives", "elves", "shelves"], baseWords: ["leaf", "wolf", "life", "thief", "knife", "elf", "shelf"] }
+                { title: "Plural '-ves'", pattern: "ves", rule: "For most nouns ending in 'f' or 'fe', change the f/fe to 'v' and add '-es'.", words: ["leaves", "wolves", "lives", "thieves", "knives", "elves", "shelves"], baseWords: ["leaf", "wolf", "life", "thief", "knife", "elf", "shelf"] },
+                { title: "Changing 'y' to 'i'", pattern: 'y-to-i', rule: "Change the final 'y' to an 'i' when adding a suffix (e.g., -er, -est, -ed, -es, -ful), but not for '-ing'.",
+                   words: [
+                     { base: 'happy', suffix: 'er', full: 'happier' },
+                     { base: 'happy', suffix: 'est', full: 'happiest' },
+                     { base: 'happy', suffix: 'ly', full: 'happily' },
+                     { base: 'cry', suffix: 'ed', full: 'cried' },
+                     { base: 'cry', suffix: 'es', full: 'cries' },
+                     { base: 'puppy', suffix: 'es', full: 'puppies' },
+                     { base: 'beauty', suffix: 'ful', full: 'beautiful' },
+                     { base: 'easy', suffix: 'ly', full: 'easily' },
+                     { base: 'silly', suffix: 'ness', full: 'silliness' },
+                     { base: 'lovely', suffix: 'er', full: 'lovelier' }
+                     ]
+                  }
             ]
         };
 
