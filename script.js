@@ -219,9 +219,10 @@
             currentGapWord.rawItem = wordOrObject;
             let pattern = currentPatternData.pattern;
             
-            if (pattern === 'doubling') {
-                currentGapWord.correct = wordOrObject.full;
-                currentGapWord.gapped = `${wordOrObject.base} + ${wordOrObject.suffix}`;
+            if (pattern === 'y-to-i' || pattern === 'doubling') {
+            // Handles rules where we show 'base + suffix'
+            currentGapWord.correct = wordOrObject.full;
+            currentGapWord.gapped = `${wordOrObject.base} + ${wordOrObject.suffix}`;
             } else {
                 currentGapWord.correct = wordOrObject;
                 let replacementPattern = pattern;
