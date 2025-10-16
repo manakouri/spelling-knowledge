@@ -554,7 +554,11 @@ function canPlaceWord(word, r, c, dir, grid, gridSize) {
                     'ue': () => word.replace('ue', 'uw'), 'ew': () => word.replace('ew', 'uw'),
                     'oi': () => word.replace('oi', 'oy'), 'oy': () => word.replace('oy', 'oi'),
                     'oa': () => word.replace('oa', 'ow'), 'ou': () => word.replace('ou', 'ow'),
-                    'ai': () => word.replace('ai', 'ay'), 'ay': () => word.replace('ay', 'ai')
+                    'ai': () => word.replace('ai', 'ay'), 'ay': () => word.replace('ay', 'ai'),
+                    'y-to-i': () => {
+    const wordObj = patternData.words.find(w => w.full.toLowerCase() === word);
+    return wordObj ? wordObj.base + wordObj.suffix : word + 's'; // e.g., creates 'happyer'
+},
                 };
                 
                 if (p === 'doubling') {
