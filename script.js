@@ -545,7 +545,7 @@ function canPlaceWord(word, r, c, dir, grid, gridSize) {
                     'u_e': () => word.replace(p.split('_')[0], '').replace(p.split('_')[1], 'u'),
                     'e_e': () => word.replace(p.split('_')[0], '').replace(p.split('_')[1], 'e'),
                     'kn': () => word.substring(1), 'wr': () => word.replace('wr', 'rw'),
-                    'mb': () => word.slice(0, -1), 'sc': () => word.replace('sc', 's'),
+                    'mb': () => word.slice(0, -1), 'sc': () => word.replace('sc', 'sk'),
                     'dge': () => word.slice(0, -3) + 'ge', 'tch': () => word.slice(0, -3) + 'ch',
                     'ck': () => word.slice(0,-2) + 'k', 'ph': () => word.replace('ph', 'f'),
                     'ly': () => word.slice(0, -2) + 'ley', 'ful': () => word + 'l',
