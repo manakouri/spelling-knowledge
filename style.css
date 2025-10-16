@@ -1,1 +1,72 @@
-
+body {
+            font-family: 'Inter', sans-serif;
+            touch-action: manipulation; /* Prevents double-tap zoom on mobile */
+        }
+        .card {
+            background-color: white;
+            border-radius: 1.5rem;
+            padding: 2.5rem;
+            box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+        }
+        .btn {
+            transition: all 0.2s ease-in-out;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+        .pattern-highlight {
+            color: #7209B7; /* Palette Purple */
+            font-weight: 700;
+        }
+        /* Word Find Styles */
+        #word-find-grid {
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            gap: 4px;
+            user-select: none;
+            -webkit-user-select: none; 
+            -moz-user-select: none;
+            -ms-user-select: none;
+            max-width: 100vw;
+            max-height: 60vw;
+            width: 100%;
+            height: auto;
+            overflow: auto;
+            touch-action: none; /* Prevent grid from scrolling/panning */
+            margin: 0 auto;
+            box-sizing: border-box;
+        }
+        .grid-cell {
+            aspect-ratio: 1 / 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            font-weight: 500;
+            border: 1px solid #d1d5db;
+            border-radius: 0.25rem;
+            cursor: pointer;
+            transition: background-color 0.1s;
+            touch-action: manipulation; /* Allow selection/highlight only */
+        }
+        .grid-cell.selecting {
+            background-color: #4CC9F0; /* Palette Light Blue */
+            color: white;
+        }
+        .grid-cell.found {
+            background-color: #F72585; /* Palette Pink */
+            color: white;
+        }
+        #found-words-list li.found {
+            text-decoration: line-through;
+            color: #6b7280; /* gray-500 */
+        }
+        .challenge-choice-btn {
+            background-color: #f3f4f6;
+            border: 2px solid #d1d5db;
+        }
+        .challenge-choice-btn:hover {
+             background-color: #e5e7eb;
+             border-color: #9ca3af;
+        }
